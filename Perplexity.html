@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>把自己放到網路上｜3 小時完成你的第一個個人網站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="3 小時完成你的第一個個人網站。不用學 WordPress，不需要會寫程式，用 AI + 最簡單的工具完成一個真的可以上線的網站。" />
+
+  <!-- 字型：Noto Sans TC & Noto Serif TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@300;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --ink: #1a1410; --paper: #faf7f2; --warm: #f0ebe0;
+      --accent: #c8502a; --accent2: #4a7c6f; --accent3: #d4a84b; --accent4: #5a6ea0;
+      --muted: #8a7f72; --border: #d8cfc0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+
+    /* layout */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section {
+      padding: 2.5rem 1.5rem 3rem;
+    }
+    @media (max-width: 900px) {
+      .section { padding: 1.8rem 1.25rem 2.75rem; }
+    }
+
+    /* HEADER (套用原模式) */
+    .header {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content:'';
+      position:absolute;
+      inset:0;
+      background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.02) 20px,rgba(255,255,255,.02) 21px);
+    }
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header-eyebrow {
+      font-family:'Noto Serif TC',serif;
+      font-weight:300;
+      font-size:.75rem;
+      letter-spacing:.3em;
+      color:var(--accent3);
+      text-transform:uppercase;
+      margin-bottom:.8rem;
+    }
+    .header h1 {
+      font-family:'Noto Serif TC',serif;
+      font-size:clamp(1.9rem,4.4vw,3rem);
+      font-weight:700;
+      letter-spacing:.12em;
+    }
+    .header-lead {
+      margin-top:1rem;
+      font-weight:300;
+      color:rgba(250,247,242,.78);
+      font-size:.95rem;
+      max-width:32rem;
+      margin-inline:auto;
+      line-height:1.8;
+    }
+    .header-sub {
+      margin-top:.7rem;
+      font-size:.85rem;
+      color:rgba(250,247,242,.65);
+    }
+
+    .header-actions {
+      margin-top:1.6rem;
+      display:flex;
+      justify-content:center;
+      gap:.9rem;
+      flex-wrap:wrap;
+    }
+    .btn-main {
+      padding:.75rem 1.8rem;
+      border-radius:999px;
+      border:2px solid var(--accent);
+      background:var(--accent);
+      color:white;
+      font-size:.9rem;
+      font-weight:600;
+      letter-spacing:.08em;
+      cursor:pointer;
+      transition:all .2s;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-main:hover {
+      background:#a8401e;
+      border-color:#a8401e;
+    }
+    .btn-ghost {
+      padding:.75rem 1.6rem;
+      border-radius:999px;
+      border:2px solid rgba(250,247,242,.5);
+      background:transparent;
+      color:rgba(250,247,242,.85);
+      font-size:.85rem;
+      font-weight:500;
+      letter-spacing:.06em;
+      cursor:pointer;
+      transition:all .2s;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-ghost:hover {
+      background:rgba(250,247,242,.08);
+      border-color:rgba(250,247,242,.9);
+      color:#fff;
+    }
+
+    /* hero 下方補充 bullet */
+    .header-notes {
+      margin-top:1.5rem;
+      display:flex;
+      justify-content:center;
+      gap:.8rem 1.4rem;
+      flex-wrap:wrap;
+      font-size:.8rem;
+      color:rgba(250,247,242,.7);
+    }
+    .header-note {
+      display:flex;
+      align-items:center;
+      gap:.25rem;
+      white-space:nowrap;
+    }
+    .header-note-dot {
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--accent3);
+    }
+
+    /* section title */
+    .section-header {
+      margin-bottom:2rem;
+      padding-bottom:1rem;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:1rem;
+    }
+    .section-title-eyebrow {
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.25em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.4rem;
+    }
+    .section-title-main {
+      font-family:'Noto Serif TC',serif;
+      font-size:1.35rem;
+      font-weight:600;
+    }
+    .section-desc {
+      font-size:.85rem;
+      color:var(--muted);
+      max-width:28rem;
+      line-height:1.7;
+    }
+
+    /* cards base （沿用你原本卡片感）*/
+    .card-grid-2 {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:1.1rem;
+    }
+    @media(max-width:720px){
+      .card-grid-2 { grid-template-columns:1fr; }
+    }
+    .simple-card {
+      background:white;
+      border:1.5px solid var(--border);
+      border-radius:10px;
+      padding:1.1rem 1.1rem 1rem;
+    }
+    .simple-card h3 {
+      font-size:.98rem;
+      font-weight:600;
+      margin-bottom:.4rem;
+    }
+    .simple-card p {
+      font-size:.82rem;
+      color:var(--muted);
+      line-height:1.8;
+    }
+
+    /* 「這堂課會帶你做一件事」區塊 */
+    .focus-block {
+      display:grid;
+      grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr);
+      gap:1.4rem;
+      align-items:stretch;
+    }
+    @media(max-width:800px){
+      .focus-block { grid-template-columns:1fr; }
+    }
+    .focus-text {
+      font-size:.9rem;
+      color:var(--ink);
+    }
+    .focus-text p + p { margin-top:.9rem; }
+
+    .focus-side {
+      background:var(--warm);
+      border-radius:12px;
+      border:1px solid var(--border);
+      padding:1.3rem 1.2rem 1.1rem;
+    }
+    .focus-tag {
+      font-size:.7rem;
+      font-weight:700;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.6rem;
+    }
+    .focus-side-title {
+      font-family:'Noto Serif TC',serif;
+      font-size:1.1rem;
+      margin-bottom:.8rem;
+    }
+    .focus-list {
+      display:flex;
+      flex-direction:column;
+      gap:.4rem;
+      font-size:.82rem;
+      color:var(--muted);
+    }
+    .focus-item {
+      display:flex;
+      gap:.4rem;
+      align-items:flex-start;
+    }
+    .focus-item-bullet {
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--accent2);
+      margin-top:.45rem;
+      flex-shrink:0;
+    }
+
+    /* you get section */
+    .get-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:1.1rem;
+    }
+    @media(max-width:720px){
+      .get-grid { grid-template-columns:1fr; }
+    }
+    .get-card {
+      background:white;
+      border:1.5px solid var(--border);
+      border-radius:10px;
+      padding:1rem 1.1rem .9rem;
+      position:relative;
+    }
+    .get-card::before{
+      content:'';
+      position:absolute;
+      top:0; left:0;
+      width:4px; height:100%;
+      background:var(--accent2);
+      border-radius:10px 0 0 10px;
+      opacity:.5;
+    }
+    .get-card h3 {
+      font-size:.98rem;
+      font-weight:600;
+      margin-bottom:.35rem;
+      padding-left:.4rem;
+    }
+    .get-card p {
+      font-size:.82rem;
+      color:var(--muted);
+      padding-left:.4rem;
+      line-height:1.8;
+    }
+
+    /* flow steps */
+    .flow-grid {
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:.9rem;
+    }
+    @media(max-width:900px){
+      .flow-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media(max-width:600px){
+      .flow-grid { grid-template-columns:1fr; }
+    }
+    .flow-item {
+      background:white;
+      border:1.5px solid var(--border);
+      border-radius:10px;
+      padding:1rem 1rem .9rem;
+    }
+    .flow-step-label {
+      font-size:.68rem;
+      font-weight:700;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.5rem;
+    }
+    .flow-title {
+      font-size:.95rem;
+      font-weight:600;
+      margin-bottom:.3rem;
+    }
+    .flow-text {
+      font-size:.8rem;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    /* final CTA */
+    .final-block {
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+      gap:1.5rem;
+      align-items:stretch;
+    }
+    @media(max-width:800px){
+      .final-block { grid-template-columns:1fr; }
+    }
+    .final-note {
+      font-size:.9rem;
+    }
+    .final-note p + p { margin-top:.8rem; }
+    .final-note strong { color:var(--accent); }
+
+    .cta-panel {
+      background:var(--warm);
+      border-radius:12px;
+      border:1px solid var(--border);
+      padding:1.5rem 1.4rem 1.4rem;
+    }
+    .cta-title {
+      font-family:'Noto Serif TC',serif;
+      font-size:1.3rem;
+      margin-bottom:.6rem;
+    }
+    .cta-text {
+      font-size:.85rem;
+      color:var(--muted);
+      margin-bottom:1.2rem;
+      line-height:1.8;
+    }
+    .cta-btn-wrap {
+      display:flex;
+      flex-direction:column;
+      gap:.6rem;
+    }
+    .cta-small {
+      font-size:.74rem;
+      color:var(--muted);
+    }
+
+    footer {
+      padding:1.6rem 1.5rem 3rem;
+      font-size:.8rem;
+      color:var(--muted);
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER / HERO -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-eyebrow">把自己放到網路上 · WORKSHOP</div>
+      <h1>3 小時完成你的第一個個人網站</h1>
+      <p class="header-lead">
+        不用學 WordPress，不需要會寫程式。<br>
+        用 AI + 最簡單的工具，完成一個真的可以上線、可以分享的網站。
+      </p>
+      <p class="header-sub">
+        這不是學技術的課，而是一起把「你是誰、你在做什麼」整理成一個能被看見的頁面。
+      </p>
+
+      <div class="header-actions">
+        <a href="#signup" class="btn-main">立即報名</a>
+        <a href="#flow" class="btn-ghost">先看課程流程</a>
+      </div>
+
+      <div class="header-notes">
+        <div class="header-note">
+          <span class="header-note-dot"></span><span>不用寫程式</span>
+        </div>
+        <div class="header-note">
+          <span class="header-note-dot"></span><span>用 AI 快速生成網站</span>
+        </div>
+        <div class="header-note">
+          <span class="header-note-dot"></span><span>當天完成並上線</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- 你是不是也卡在這裡 -->
+    <section class="section" id="stuck">
+      <div class="section-header">
+        <div>
+          <div class="section-title-eyebrow">你是不是也卡在這裡</div>
+          <div class="section-title-main">不是你不會做，而是還沒有一個夠簡單的開始</div>
+        </div>
+        <p class="section-desc">
+          很多人不是沒有想法，而是一打開工具就被複雜度嚇退。這堂課先處理內容，再處理工具，
+          讓你從「想做」真的走到「做出來」。
+        </p>
+      </div>
+
+      <div class="card-grid-2">
+        <article class="simple-card">
+          <h3>想做網站，但不知道從哪開始</h3>
+          <p>腦中有很多想法，卻不知道第一步要先整理什麼、先寫什麼。</p>
+        </article>
+        <article class="simple-card">
+          <h3>打開 WordPress 就覺得太複雜</h3>
+          <p>系統、主機、外掛、版型，一堆設定排在你和內容中間，還沒開始就先累了。</p>
+        </article>
+        <article class="simple-card">
+          <h3>腦中有想法，但整理不出來</h3>
+          <p>你明明知道自己在做什麼，卻很難寫成讓陌生人也懂的自我介紹。</p>
+        </article>
+        <article class="simple-card">
+          <h3>一直想開始，但一直沒開始</h3>
+          <p>卡住的不是能力，而是缺少一個足夠輕巧、能立刻動手的方式。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 為什麼是這樣設計 ＋ 核心 -->
+    <section class="section" id="why">
+      <div class="section-header">
+        <div>
+          <div class="section-title-eyebrow">為什麼是這樣設計？</div>
+          <div class="section-title-main">先完成「可以存在的第一個版本」</div>
+        </div>
+      </div>
+
+      <div class="focus-block">
+        <div class="focus-text">
+          <p>
+            我之前辦過 11 場 WordPress 工作坊，發現多數人不是學不會，而是
+            <strong>還沒準備好內容，就先被工具的複雜度卡住</strong>。
+          </p>
+          <p>
+            所以這次，我把整個流程刻意簡化，不是要你一次做出完美網站，而是先完成一個
+            「可以存在、可以被打開」的版本，讓你真正開始被看見。
+          </p>
+        </div>
+
+        <aside class="focus-side">
+          <div class="focus-tag">這堂課會帶你做的事</div>
+          <div class="focus-side-title">不是學技術，而是把你整理成一個網站</div>
+          <div class="focus-list">
+            <div class="focus-item">
+              <span class="focus-item-bullet"></span>
+              <div>用 AI 快速生成網站雛形，不被編輯器卡住。</div>
+            </div>
+            <div class="focus-item">
+              <span class="focus-item-bullet"></span>
+              <div>用最簡單工具完成上線，當天拿到真實網址。</div>
+            </div>
+            <div class="focus-item">
+              <span class="focus-item-bullet"></span>
+              <div>不用寫程式，只專心在「你想怎麼介紹自己」。</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 你會帶走什麼 -->
+    <section class="section" id="takeaway">
+      <div class="section-header">
+        <div>
+          <div class="section-title-eyebrow">你會帶走什麼</div>
+          <div class="section-title-main">不是教材，而是一個當天就存在的成果</div>
+        </div>
+        <p class="section-desc">
+          你離開教室時，不只是知道怎麼做，而是已經擁有一個可以打開、可以分享、
+          可以開始被看見的版本。
+        </p>
+      </div>
+
+      <div class="get-grid">
+        <article class="get-card">
+          <h3>一個已經上線的網站</h3>
+          <p>不是草稿檔案，而是一個真的可以在瀏覽器打開的頁面。</p>
+        </article>
+        <article class="get-card">
+          <h3>一段清楚的自我介紹</h3>
+          <p>把你是誰、在做什麼、想往哪裡走，整理成更容易被理解的文字。</p>
+        </article>
+        <article class="get-card">
+          <h3>一個可以分享的連結</h3>
+          <p>課後可以貼給朋友、潛在客戶、合作對象，正式開始你的線上存在。</p>
+        </article>
+        <article class="get-card">
+          <h3>一套可延續的方法</h3>
+          <p>之後你可以自己持續調整，不會被複雜系統綁住，讓網站跟著你一起長大。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 課程流程 -->
+    <section class="section" id="flow">
+      <div class="section-header">
+        <div>
+          <div class="section-title-eyebrow">課程流程</div>
+          <div class="section-title-main">四個步驟，完成你的第一個版本</div>
+        </div>
+        <p class="section-desc">
+          流程刻意簡化，不追求一次做到最完整，而是先完成最小可上線版本，
+          讓你真正跨出第一步。
+        </p>
+      </div>
+
+      <div class="flow-grid">
+        <article class="flow-item">
+          <div class="flow-step-label">STEP 1</div>
+          <div class="flow-title">釐清你的內容</div>
+          <div class="flow-text">先整理你是誰、在做什麼、想讓誰看見，以及希望這個網站幫你做到什麼。</div>
+        </article>
+        <article class="flow-item">
+          <div class="flow-step-label">STEP 2</div>
+          <div class="flow-title">用 AI 生成網站</div>
+          <div class="flow-text">把這些內容交給 AI，快速生成一頁式網站雛形，先有一個「看得見」的版本。</div>
+        </article>
+        <article class="flow-item">
+          <div class="flow-step-label">STEP 3</div>
+          <div class="flow-title">做最小修改</div>
+          <div class="flow-text">一起調整文字、區塊順序與視覺重點，讓頁面更像你、說的更像你。</div>
+        </article>
+        <article class="flow-item">
+          <div class="flow-step-label">STEP 4</div>
+          <div class="flow-title">成功上線</div>
+          <div class="flow-text">完成部署，拿到可以分享的網址，正式把自己放到網路上。</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 最後 CTA -->
+    <section class="section" id="signup">
+      <div class="section-header">
+        <div>
+          <div class="section-title-eyebrow">現在開始</div>
+          <div class="section-title-main">如果你也卡在「想開始，但還沒開始」</div>
+        </div>
+      </div>
+
+      <div class="final-block">
+        <div class="final-note">
+          <p>
+            如果你一直覺得「應該要有一個自己的網站」，卻總是在忙完別的事後，把這件事往後排，
+            這堂課就是專門留給這件事的 3 小時。
+          </p>
+          <p>
+            你不需要先準備好「完美版本」，只要願意開始，我們會在課堂上一起做出
+            <strong>第一個可以存在的版本</strong>，讓它從零開始存在於網路上。
+          </p>
+        </div>
+
+        <aside class="cta-panel">
+          <div class="cta-title">立即報名 · 名額有限，額滿為止</div>
+          <p class="cta-text">
+            預留你的位子，讓「有一個自己的網站」不再只是待辦清單，而是今天就會完成的一件事。
+          </p>
+          <div class="cta-btn-wrap">
+            <a href="#" class="btn-main" style="justify-content:center;">立即報名</a>
+            <div class="cta-small">報名按鈕連結請換成你的表單或售票頁（例如 KKTIX、Accupass、Google 表單）。</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    這是一份依照你現有網站設計語言延伸的工作坊單頁，可直接上傳到 GitHub Pages，或再整合進你的主站。
+  </footer>
+</body>
+</html>
