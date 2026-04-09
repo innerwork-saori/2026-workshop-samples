@@ -1,114 +1,330 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>聯絡表單</title>
+  <title>contact-form</title>
   <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-2: #f3f0ec;
+      --text: #28251d;
+      --muted: #6f6b63;
+      --border: #d8d3cb;
+      --primary: #01696f;
+      --primary-hover: #0c4e54;
+      --success-bg: #e6fcf5;
+      --success-text: #087f5b;
+      --error-bg: #fff0f6;
+      --error-text: #a61e4d;
+      --radius: 14px;
+      --shadow: 0 12px 32px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: Arial, sans-serif;
-      max-width: 680px;
-      margin: 40px auto;
-      padding: 0 16px;
+      margin: 0;
+      font-family: Inter, "Noto Sans TC", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
-    form {
-      display: grid;
-      gap: 16px;
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 40px 20px 72px;
     }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 32px 28px 18px;
+      background: linear-gradient(180deg, #fbfbf9 0%, #f7f6f2 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.15;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    form {
+      padding: 28px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
     label {
       display: grid;
-      gap: 6px;
-      font-weight: 600;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
     }
+
+    .hint {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: -4px;
+    }
+
     input, textarea, button {
       font: inherit;
-      padding: 10px 12px;
     }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    input:focus, textarea:focus {
+      outline: 2px solid rgba(1,105,111,.18);
+      border-color: var(--primary);
+    }
+
     textarea {
-      min-height: 140px;
+      min-height: 160px;
       resize: vertical;
     }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
     button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 18px;
+      min-width: 128px;
+      font-weight: 700;
       cursor: pointer;
+      transition: background .2s ease, transform .12s ease;
     }
-    .message {
-      margin-top: 16px;
-      padding: 12px;
-      background: #f3f3f3;
+
+    button:hover { background: var(--primary-hover); }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: .65; cursor: wait; }
+
+    .status {
       display: none;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      border: 1px solid transparent;
     }
-    .error {
-      background: #ffe3e3;
-      color: #a61e4d;
+
+    .status.show { display: block; }
+    .status.success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border-color: #b2f2dd;
     }
-    .success {
-      background: #e6fcf5;
-      color: #087f5b;
+
+    .status.error {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border-color: #fcc2d7;
+    }
+
+    .note {
+      padding: 0 28px 28px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .hidden {
+      position: absolute !important;
+      left: -9999px !important;
+      width: 1px !important;
+      height: 1px !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .wrap { padding: 24px 14px 48px; }
+      .hero, form, .note { padding-left: 18px; padding-right: 18px; }
+      .grid { grid-template-columns: 1fr; }
+      .actions { align-items: stretch; }
+      button { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <h1>聯絡我</h1>
-  <p>請填寫以下資料，我會收到你的訊息。</p>
+  <main class="wrap">
+    <section class="card">
+      <div class="hero">
+        <h1>聯絡表單</h1>
+        <p class="lead">這個版本可以直接放在 GitHub Pages，送出後由 Google Apps Script 寫入 Google Sheets。</p>
+      </div>
 
-  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+      <iframe name="hidden_iframe" id="hidden_iframe" class="hidden" title="hidden submit target"></iframe>
 
-  <form
-    id="contact-form"
-    action="https://script.google.com/macros/s/AKfycbyTtoZ5_Kms5_skllUgD4M-9r4pnQg-ZZDMonHMb8hAIwP-RT5e_F-zPcc5CIEG0cKcwQ/exec"
-    method="post"
-    target="hidden_iframe"
-  >
-    <label>
-      姓名
-      <input type="text" name="name" required>
-    </label>
+      <form id="contact-form" action="https://script.google.com/macros/s/AKfycbyTtoZ5_Kms5_skllUgD4M-9r4pnQg-ZZDMonHMb8hAIwP-RT5e_F-zPcc5CIEG0cKcwQ/exec" method="post" target="hidden_iframe" novalidate>
+        <div class="grid">
+          <label>
+            姓名
+            <input type="text" name="name" required autocomplete="name" placeholder="請輸入姓名">
+          </label>
 
-    <label>
-      Email
-      <input type="email" name="email" required>
-    </label>
+          <label>
+            Email
+            <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+          </label>
+        </div>
 
-    <label>
-      主旨
-      <input type="text" name="subject">
-    </label>
+        <div class="grid">
+          <label>
+            公司 / 單位
+            <input type="text" name="company" autocomplete="organization" placeholder="選填">
+          </label>
 
-    <label>
-      訊息
-      <textarea name="message" required></textarea>
-    </label>
+          <label>
+            主旨
+            <input type="text" name="subject" placeholder="例如：職涯諮詢合作">
+          </label>
+        </div>
 
-    <input type="hidden" name="form_name" value="contact_form">
-    <input type="hidden" name="source" value="github-pages">
+        <label>
+          訊息
+          <textarea name="message" required placeholder="請描述你的需求"></textarea>
+          <span class="hint">建議至少填寫需求背景、希望合作方式、可聯絡時間。</span>
+        </label>
 
-    <button type="submit">送出</button>
-  </form>
+        <div class="hidden" aria-hidden="true">
+          <label>
+            Website
+            <input type="text" name="website" tabindex="-1" autocomplete="off">
+          </label>
+        </div>
 
-  <div id="form-message" class="message"></div>
+        <input type="hidden" name="form_name" value="contact_form">
+        <input type="hidden" name="source" value="github-pages">
+        <input type="hidden" name="page_url" id="page_url" value="">
+        <input type="hidden" name="user_agent" id="user_agent" value="">
+
+        <div class="actions">
+          <button type="submit" id="submit-btn">送出</button>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </form>
+
+      <p class="note">使用前請先把 action 裡的 <code>YOUR_DEPLOYMENT_ID</code> 換成你的 Apps Script Web App 部署網址。</p>
+    </section>
+  </main>
 
   <script>
     const form = document.getElementById('contact-form');
     const iframe = document.getElementById('hidden_iframe');
-    const messageBox = document.getElementById('form-message');
-    let isSubmitting = false;
+    const statusBox = document.getElementById('status');
+    const submitBtn = document.getElementById('submit-btn');
+    const pageUrl = document.getElementById('page_url');
+    const userAgent = document.getElementById('user_agent');
 
-    form.addEventListener('submit', function () {
-      isSubmitting = true;
-      messageBox.className = 'message';
-      messageBox.style.display = 'block';
-      messageBox.textContent = '送出中...';
+    let submitting = false;
+
+    pageUrl.value = window.location.href;
+    userAgent.value = navigator.userAgent;
+
+    function showStatus(type, text) {
+      statusBox.className = 'status show ' + type;
+      statusBox.textContent = text;
+    }
+
+    function validateForm() {
+      const name = form.elements['name'].value.trim();
+      const email = form.elements['email'].value.trim();
+      const message = form.elements['message'].value.trim();
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!name) {
+        showStatus('error', '請先填寫姓名。');
+        form.elements['name'].focus();
+        return false;
+      }
+      if (!email || !emailOk) {
+        showStatus('error', '請填寫有效的 Email。');
+        form.elements['email'].focus();
+        return false;
+      }
+      if (!message) {
+        showStatus('error', '請先填寫訊息內容。');
+        form.elements['message'].focus();
+        return false;
+      }
+      return true;
+    }
+
+    form.addEventListener('submit', function (event) {
+      statusBox.className = 'status';
+      statusBox.textContent = '';
+
+      if (!validateForm()) {
+        event.preventDefault();
+        return;
+      }
+
+      submitting = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = '送出中...';
+      showStatus('success', '資料送出中，請稍候...');
     });
 
     iframe.addEventListener('load', function () {
-      if (!isSubmitting) return;
+      if (!submitting) return;
 
-      messageBox.className = 'message success';
-      messageBox.style.display = 'block';
-      messageBox.textContent = '已送出成功，謝謝！';
+      showStatus('success', '已送出成功，謝謝！');
       form.reset();
-      isSubmitting = false;
+      pageUrl.value = window.location.href;
+      userAgent.value = navigator.userAgent;
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出';
+      submitting = false;
     });
   </script>
 </body>
