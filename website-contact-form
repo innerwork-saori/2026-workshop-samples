@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>聯絡表單</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 16px;
+      line-height: 1.6;
+    }
+    form {
+      display: grid;
+      gap: 16px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-weight: 600;
+    }
+    input, textarea, button {
+      font: inherit;
+      padding: 10px 12px;
+    }
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+    button {
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f3f3f3;
+      display: none;
+    }
+    .error {
+      background: #ffe3e3;
+      color: #a61e4d;
+    }
+    .success {
+      background: #e6fcf5;
+      color: #087f5b;
+    }
+  </style>
+</head>
+<body>
+  <h1>聯絡我</h1>
+  <p>請填寫以下資料，我會收到你的訊息。</p>
+
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+  <form
+    id="contact-form"
+    action="https://script.google.com/macros/s/AKfycbyTtoZ5_Kms5_skllUgD4M-9r4pnQg-ZZDMonHMb8hAIwP-RT5e_F-zPcc5CIEG0cKcwQ/exec"
+    method="post"
+    target="hidden_iframe"
+  >
+    <label>
+      姓名
+      <input type="text" name="name" required>
+    </label>
+
+    <label>
+      Email
+      <input type="email" name="email" required>
+    </label>
+
+    <label>
+      主旨
+      <input type="text" name="subject">
+    </label>
+
+    <label>
+      訊息
+      <textarea name="message" required></textarea>
+    </label>
+
+    <input type="hidden" name="form_name" value="contact_form">
+    <input type="hidden" name="source" value="github-pages">
+
+    <button type="submit">送出</button>
+  </form>
+
+  <div id="form-message" class="message"></div>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const iframe = document.getElementById('hidden_iframe');
+    const messageBox = document.getElementById('form-message');
+    let isSubmitting = false;
+
+    form.addEventListener('submit', function () {
+      isSubmitting = true;
+      messageBox.className = 'message';
+      messageBox.style.display = 'block';
+      messageBox.textContent = '送出中...';
+    });
+
+    iframe.addEventListener('load', function () {
+      if (!isSubmitting) return;
+
+      messageBox.className = 'message success';
+      messageBox.style.display = 'block';
+      messageBox.textContent = '已送出成功，謝謝！';
+      form.reset();
+      isSubmitting = false;
+    });
+  </script>
+</body>
+</html>
