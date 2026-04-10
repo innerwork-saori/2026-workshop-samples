@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>薪資成長計算機</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #c8ff00;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --text-muted: #777;
+    --promotion: #ffd700;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(200,255,0,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(255,107,53,0.05) 0%, transparent 50%);
+  }
+
+  .wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  header {
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .subtitle {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ── Form Grid ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 400px) { .form-grid { grid-template-columns: 1fr; } }
+
+  /* months input highlight */
+  .field-months input {
+    border-color: rgba(255,107,53,0.4);
+  }
+  .field-months input:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 2px rgba(255,107,53,0.15);
+  }
+  .field-months label { color: var(--accent2); }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  input[type="number"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(200,255,0,0.15);
+  }
+
+  /* Promotion row */
+  .promo-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--promotion);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .promo-title {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--promotion);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .promo-list { display: flex; flex-direction: column; gap: 10px; }
+  .promo-entry {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+    animation: rowIn 0.2s forwards;
+  }
+  @media (max-width: 480px) {
+    .promo-entry { grid-template-columns: 1fr 1fr auto; gap: 8px; }
+  }
+  .promo-entry input {
+    font-size: 16px;
+    padding: 11px 12px;
+  }
+  .promo-entry label { font-size: 9px; }
+
+  /* add / remove buttons */
+  button.btn-add {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.35);
+    color: var(--promotion);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  button.btn-add:hover { background: rgba(255,215,0,0.2); }
+  button.btn-remove {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    width: 38px; height: 38px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    align-self: end;
+    padding: 0;
+    margin-bottom: 0;
+  }
+  button.btn-remove:hover { background: rgba(255,80,80,0.15); color: #ff5050; border-color: rgba(255,80,80,0.3); }
+
+  /* ── CTA Button ── */
+  button#calc {
+    width: 100%;
+    padding: 18px;
+    background: var(--accent);
+    color: #0d0d0d;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    margin-bottom: 48px;
+  }
+  button#calc:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(200,255,0,0.25);
+  }
+  button#calc:active { transform: translateY(0); }
+
+  /* ── Summary Cards ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 620px) { .summary-grid { grid-template-columns: 1fr 1fr; } }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+  }
+  .card-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .card-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+  }
+  .card-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+    opacity: 0;
+    animation: rowIn 0.3s forwards;
+  }
+  tbody tr:hover { background: var(--surface2); }
+
+  td {
+    padding: 13px 14px;
+    vertical-align: middle;
+  }
+  td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) {
+    font-family: 'Space Mono', monospace;
+    text-align: right;
+  }
+
+  .year-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface2);
+    font-weight: 700;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .year-badge.promo {
+    background: rgba(255,215,0,0.15);
+    color: var(--promotion);
+    border: 1px solid rgba(255,215,0,0.3);
+  }
+  .promo-tag {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    background: rgba(255,215,0,0.12);
+    color: var(--promotion);
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 2px;
+    padding: 2px 6px;
+    vertical-align: middle;
+  }
+
+  .raise-pct {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .raise-normal { color: var(--accent); }
+  .raise-promo  { color: var(--promotion); }
+
+  .salary-val { font-size: 15px; font-weight: 700; }
+  .cumulative { color: var(--text-muted); font-size: 12px; }
+
+  /* Bar inside table */
+  .bar-cell { width: 120px; min-width: 80px; }
+  .bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(.22,1,.36,1);
+  }
+  .bar-fill.promo { background: var(--promotion); }
+
+  /* hidden until calculated */
+  #results { display: none; }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, var(--accent), transparent);
+    margin-bottom: 32px;
+    opacity: 0.4;
+  }
+
+  /* ── Chart ── */
+  .chart-wrap {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+  }
+  .chart-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 140px;
+  }
+  .chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    height: 100%;
+    cursor: default;
+  }
+  .chart-bar {
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.6s cubic-bezier(.22,1,.36,1);
+    position: relative;
+  }
+  .chart-bar:not(.chart-bar-promo) { background: var(--accent); opacity: 0.7; }
+  .chart-bar.chart-bar-promo { background: var(--promotion); opacity: 1; }
+  .chart-col:hover .chart-bar { opacity: 1; }
+  .chart-yr {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0;
+    white-space: nowrap;
+    font-family: 'Space Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <span class="tag">Financial Planner</span>
+    <h1>薪資成長<em>計算機</em></h1>
+    <p class="subtitle">SALARY GROWTH PROJECTOR · ANNUAL BREAKDOWN</p>
+  </header>
+
+  <!-- Inputs -->
+  <div class="form-grid">
+    <div class="field">
+      <label>起薪（月薪，元）</label>
+      <input type="number" id="base" value="40000" min="1">
+    </div>
+    <div class="field">
+      <label>每年平均調薪幅度（%）</label>
+      <input type="number" id="rate" value="3" step="0.1" min="0">
+    </div>
+    <div class="field field-months">
+      <label>年薪平均（月）</label>
+      <input type="number" id="months" value="14" step="0.5" min="12">
+    </div>
+    <div class="field">
+      <label>計算年資（年）</label>
+      <input type="number" id="years" value="10" min="1" max="50">
+    </div>
+  </div>
+
+  <div class="promo-row">
+    <div class="promo-title">
+      <span>★ 升遷／跳槽設定（可新增多筆）</span>
+      <button class="btn-add" onclick="addPromoRow()">＋ 新增一筆</button>
+    </div>
+    <div class="promo-list" id="promo-list">
+      <!-- rows inserted by JS -->
+    </div>
+  </div>
+
+  <button id="calc" onclick="calculate()">▶ 開始計算</button>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="divider"></div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+      <div class="card">
+        <span class="card-label">第 1 年月薪</span>
+        <div class="card-value" id="s-start"></div>
+        <div class="card-sub">起薪</div>
+      </div>
+      <div class="card">
+        <span class="card-label">最終月薪</span>
+        <div class="card-value" id="s-end"></div>
+        <div class="card-sub" id="s-end-sub"></div>
+      </div>
+      <div class="card">
+        <span class="card-label">薪資成長倍數</span>
+        <div class="card-value" id="s-growth"></div>
+        <div class="card-sub">相較起薪</div>
+      </div>
+      <div class="card">
+        <span class="card-label">第 1 年年薪</span>
+        <div class="card-value" id="s-annual-start" style="color:var(--accent2)"></div>
+        <div class="card-sub" id="s-annual-start-sub"></div>
+      </div>
+      <div class="card">
+        <span class="card-label">最終年薪</span>
+        <div class="card-value" id="s-annual-end" style="color:var(--accent2)"></div>
+        <div class="card-sub" id="s-annual-end-sub"></div>
+      </div>
+      <div class="card">
+        <span class="card-label">年薪總和</span>
+        <div class="card-value" id="s-total"></div>
+        <div class="card-sub">累計收入</div>
+      </div>
+      <div class="card">
+        <span class="card-label">整體漲幅</span>
+        <div class="card-value" id="s-overall"></div>
+        <div class="card-sub" id="s-years-sub"></div>
+      </div>
+      <div class="card">
+        <span class="card-label">年均複合成長</span>
+        <div class="card-value" id="s-cagr"></div>
+        <div class="card-sub">CAGR</div>
+      </div>
+      <div class="card">
+        <span class="card-label">年薪計算基準</span>
+        <div class="card-value" id="s-months" style="color:var(--accent2)"></div>
+        <div class="card-sub">個月薪資</div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrap">
+      <div class="chart-title">月薪走勢圖 — 每年月薪</div>
+      <div class="chart-bars" id="chart-bars"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>年資</th>
+            <th>月薪（元）</th>
+            <th>年薪（元）</th>
+            <th>當年調幅</th>
+            <th>累積年薪</th>
+            <th class="bar-cell">相對水位</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Promotion rows management ──
+let promoCount = 0;
+
+function addPromoRow(year = '', pct = '') {
+  promoCount++;
+  const id = promoCount;
+  const list = document.getElementById('promo-list');
+  const div = document.createElement('div');
+  div.className = 'promo-entry';
+  div.dataset.id = id;
+  div.innerHTML = `
+    <div class="field">
+      <label>第幾年（年資）</label>
+      <input type="number" class="promo-year" placeholder="例：5" min="1" value="${year}">
+    </div>
+    <div class="field">
+      <label>調薪幅度（%）</label>
+      <input type="number" class="promo-pct" placeholder="例：20" step="0.1" min="0" value="${pct}">
+    </div>
+    <button class="btn-remove" onclick="removePromoRow(${id})" title="刪除">✕</button>
+  `;
+  list.appendChild(div);
+}
+
+function removePromoRow(id) {
+  const el = document.querySelector(`.promo-entry[data-id="${id}"]`);
+  if (el) el.remove();
+}
+
+function getPromoEvents() {
+  const entries = document.querySelectorAll('.promo-entry');
+  const events = {};
+  entries.forEach(entry => {
+    const y   = parseInt(entry.querySelector('.promo-year').value);
+    const pct = parseFloat(entry.querySelector('.promo-pct').value);
+    if (y > 0 && pct > 0) {
+      // if duplicate year, last one wins (or could sum — here last wins)
+      events[y] = pct / 100;
+    }
+  });
+  return events;
+}
+
+// ── Helpers ──
+function fmt(n) {
+  return Math.round(n).toLocaleString('zh-TW');
+}
+function fmtPct(p) {
+  return (p >= 0 ? '+' : '') + p.toFixed(1) + '%';
+}
+
+// ── Main calculation ──
+function calculate() {
+  const base   = parseFloat(document.getElementById('base').value) || 40000;
+  const rate   = parseFloat(document.getElementById('rate').value) / 100 || 0.03;
+  const months = parseFloat(document.getElementById('months').value) || 14;
+  const years  = parseInt(document.getElementById('years').value) || 10;
+  const promoEvents = getPromoEvents(); // { year: pctDecimal, ... }
+
+  // Update table header
+  document.querySelector('thead tr').innerHTML = `
+    <th>年資</th>
+    <th>月薪（元）</th>
+    <th>年薪（${months} 月）</th>
+    <th>當年調幅</th>
+    <th>累積年薪</th>
+    <th class="bar-cell">相對水位</th>
+  `;
+
+  const rows = [];
+  let salary = base;
+  let cumAnnual = 0;
+
+  for (let y = 1; y <= years; y++) {
+    let raiseRate = null;
+    let isPromo = false;
+
+    if (y > 1) {
+      if (promoEvents[y] !== undefined) {
+        // 升遷／跳槽年：只套用升遷幅度
+        salary = salary * (1 + promoEvents[y]);
+        raiseRate = promoEvents[y];
+        isPromo = true;
+      } else {
+        // 一般年：套用年度調薪
+        salary = salary * (1 + rate);
+        raiseRate = rate;
+      }
+    }
+
+    const annual = salary * months;
+    cumAnnual += annual;
+
+    rows.push({ year: y, monthly: salary, annual, cumAnnual, raiseRate, isPromo });
+  }
+
+  const maxSalary = Math.max(...rows.map(r => r.monthly));
+
+  // ── Summary ──
+  document.getElementById('s-start').textContent = fmt(base);
+  document.getElementById('s-end').textContent   = fmt(rows[rows.length-1].monthly);
+  document.getElementById('s-end-sub').textContent = `第 ${years} 年月薪`;
+  document.getElementById('s-growth').textContent =
+    (rows[rows.length-1].monthly / base).toFixed(2) + 'x';
+  document.getElementById('s-annual-start').textContent = fmt(rows[0].annual);
+  document.getElementById('s-annual-start-sub').textContent = `月薪 × ${months} 月`;
+  document.getElementById('s-annual-end').textContent = fmt(rows[rows.length-1].annual);
+  document.getElementById('s-annual-end-sub').textContent = `第 ${years} 年`;
+  document.getElementById('s-total').textContent = fmt(rows.reduce((a,r) => a + r.annual, 0));
+  const overall = (rows[rows.length-1].monthly / base - 1) * 100;
+  document.getElementById('s-overall').textContent = fmtPct(overall);
+  document.getElementById('s-years-sub').textContent = `共 ${years} 年`;
+  const cagr = (Math.pow(rows[rows.length-1].monthly / base, 1/(years-1)) - 1) * 100;
+  document.getElementById('s-cagr').textContent = fmtPct(isNaN(cagr) ? 0 : cagr);
+  document.getElementById('s-months').textContent = months;
+
+  // ── Chart ──
+  const chartEl = document.getElementById('chart-bars');
+  chartEl.innerHTML = '';
+  rows.forEach(r => {
+    const pct = (r.monthly / maxSalary) * 100;
+    const col = document.createElement('div');
+    col.className = 'chart-col';
+    col.title = `第${r.year}年月薪：${fmt(r.monthly)} 元 | 年薪：${fmt(r.annual)} 元`;
+    col.innerHTML = `
+      <div class="chart-bar${r.isPromo ? ' chart-bar-promo' : ''}" style="height:${pct}%"></div>
+      <span class="chart-yr">${r.year}</span>
+    `;
+    chartEl.appendChild(col);
+  });
+
+  // ── Table ──
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const barPct = (r.monthly / maxSalary * 100).toFixed(1);
+    const raiseStr = r.raiseRate === null
+      ? '<span style="color:var(--text-muted);font-size:11px">— 起薪</span>'
+      : `<span class="raise-pct ${r.isPromo ? 'raise-promo' : 'raise-normal'}">${fmtPct(r.raiseRate * 100)}</span>`;
+
+    const tr = document.createElement('tr');
+    tr.style.animationDelay = (i * 40) + 'ms';
+    tr.innerHTML = `
+      <td>
+        <span class="year-badge${r.isPromo ? ' promo' : ''}">${r.year}</span>
+        ${r.isPromo ? '<span class="promo-tag">升遷／跳槽</span>' : ''}
+      </td>
+      <td class="salary-val" style="color:${r.isPromo ? 'var(--promotion)' : 'var(--text)'}">${fmt(r.monthly)}</td>
+      <td style="color:var(--accent2);font-weight:700">${fmt(r.annual)}</td>
+      <td>${raiseStr}</td>
+      <td class="cumulative">${fmt(r.cumAnnual)}</td>
+      <td class="bar-cell">
+        <div class="bar-bg">
+          <div class="bar-fill${r.isPromo ? ' promo' : ''}" style="width:${barPct}%"></div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Init: add one empty promo row only, don't auto-calculate
+window.addEventListener('load', () => {
+  addPromoRow();
+});
+</script>
+</body>
+</html>
