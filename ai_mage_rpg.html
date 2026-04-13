@@ -63,6 +63,7 @@
       const [score, setScore] = useState(0);
       const [mySkills, setMySkills] = useState([]);
       const [myGear, setMyGear] = useState([]);
+      const [showShare, setShowShare] = useState(false);
 
       // 7 題，每題 0–3 分，滿分 21 分，切成 5 階
       // 0–4: 初階, 5–9: 中階, 10–14: 高階, 15–18: 大法師, 19–21: 賢者
@@ -113,12 +114,20 @@
                 <div className="text-xs text-slate-400 mb-1 tracking-widest">你的階級</div>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-2">{rank}</h2>
                 <p className="text-sm text-slate-300 mb-4">根據你的作答結果，這是你目前的 AI 法師等級。</p>
-                <button
-                  onClick={() => { setStep(0); setScore(0); setMySkills([]); setMyGear([]); }}
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 text-sm transition-all"
-                >
-                  🔄 重新鑑定
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => { setStep(0); setScore(0); setMySkills([]); setMyGear([]); }}
+                    className="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 text-sm transition-all"
+                  >
+                    🔄 重新鑑定
+                  </button>
+                  <button
+                    onClick={() => setShowShare(true)}
+                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-sm transition-all"
+                  >
+                    📤 分享成果
+                  </button>
+                </div>
               </div>
 
               {/* 技能裝備盤點 */}
@@ -149,6 +158,33 @@
                     </button>
                   ))}
                 </div>
+
+                {/* 盤點成果段落 */}
+                {(mySkills.length > 0 || myGear.length > 0) && (
+                  <div className="mt-5 pt-4 border-t border-white/10">
+                    <p className="text-sm font-semibold mb-3 text-slate-200">✨ 你的盤點成果</p>
+                    {mySkills.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs text-slate-400 mb-1.5">已掌握技能 ({mySkills.length})</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {mySkills.map(s => (
+                            <span key={s} className="px-2 py-1 bg-emerald-700/60 text-emerald-200 rounded-full text-xs">⚡ {s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {myGear.length > 0 && (
+                      <div>
+                        <p className="text-xs text-slate-400 mb-1.5">已備齊裝備 ({myGear.length})</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {myGear.map(g => (
+                            <span key={g} className="px-2 py-1 bg-amber-700/60 text-amber-200 rounded-full text-xs">🔧 {g}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* 升階建議 */}
@@ -247,7 +283,85 @@
             </div>
           </div>
         </div>
-      );
+
+        {/* ── Share Modal ── */}
+        {showShare && (
+          <div
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4"
+            onClick={() => setShowShare(false)}
+          >
+            <div
+              className="w-full max-w-sm bg-slate-900 rounded-3xl overflow-hidden shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* 截圖區域 */}
+              <div className="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 px-6 py-8">
+                {/* Header */}
+                <div className="text-center mb-6">
+                  <div className="text-3xl mb-2">🧙‍♂️</div>
+                  <div className="text-xs tracking-widest text-indigo-400 mb-1">AI 法師等級鑑定</div>
+                  <h2 className="text-2xl font-bold text-white">{rank}</h2>
+                </div>
+
+                {/* 分隔線 */}
+                <div className="border-t border-white/10 mb-5" />
+
+                {/* 技能成果 */}
+                {mySkills.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs text-slate-400 mb-2 tracking-wide">⚡ 已掌握技能</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {mySkills.map(s => (
+                        <span key={s} className="px-2.5 py-1 bg-emerald-800/70 text-emerald-200 rounded-full text-xs">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 裝備成果 */}
+                {myGear.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs text-slate-400 mb-2 tracking-wide">🔧 已備齊裝備</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {myGear.map(g => (
+                        <span key={g} className="px-2.5 py-1 bg-amber-800/70 text-amber-200 rounded-full text-xs">{g}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 升階目標 */}
+                <div className="mb-5">
+                  <p className="text-xs text-slate-400 mb-2 tracking-wide">🎯 下一個目標</p>
+                  <p className="text-sm text-indigo-300 font-semibold">{plan.next}</p>
+                  {plan.skills.length > 0 && (
+                    <p className="text-xs text-slate-400 mt-1">待解鎖：{plan.skills.join('、')}</p>
+                  )}
+                </div>
+
+                {/* 分隔線 */}
+                <div className="border-t border-white/10 mb-4" />
+
+                {/* Footer */}
+                <div className="text-center">
+                  <p className="text-xs text-slate-500">你也來測測看你的 AI 法師等級吧 🔮</p>
+                </div>
+              </div>
+
+              {/* 關閉按鈕 */}
+              <div className="px-6 py-4 bg-slate-900">
+                <button
+                  onClick={() => setShowShare(false)}
+                  className="w-full py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 active:scale-95 text-sm transition-all"
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
